@@ -5,6 +5,11 @@
 #define BUILD_FOLDER "_build/"
 #define SRC_FOLDER   "src/"
 
+char *subcommands[] = {
+    "cat",
+    "echo",
+};
+
 int main(int argc, char **argv)
 {
     NOB_GO_REBUILD_URSELF(argc, argv);
@@ -22,38 +27,18 @@ int main(int argc, char **argv)
         SRC_FOLDER"main.c");
     if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
 
-    //chdir(BUILD_FOLDER);
-    nob_cmd_append(&cmd,
-        "pwd");
-    if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
-    {
-    char exe_absolute_path[PATH_MAX];
-    realpath("./" BUILD_FOLDER EXE_NAME, exe_absolute_path);
-    printf("|%s|\n", exe_absolute_path);
-    char link_absolute_path[PATH_MAX];
-    realpath("./" BUILD_FOLDER "cat", link_absolute_path);
-    printf("|%s|\n", link_absolute_path);
+    for (int i=0; i<NOB_ARRAY_LEN(subcommands); ++i) {
+        char exe_absolute_path[PATH_MAX];
+        realpath("./" BUILD_FOLDER EXE_NAME, exe_absolute_path);
+        char link_absolute_path[PATH_MAX];
+        realpath(
+                nob_temp_sprintf("./%s%s", BUILD_FOLDER, subcommands[i]),
+                link_absolute_path);
 
-    nob_cmd_append(&cmd,
-        "ln", "-fs", exe_absolute_path, link_absolute_path);
-    if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
+        nob_cmd_append(&cmd,
+            "ln", "-fs", exe_absolute_path, link_absolute_path);
+        if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
     }
-    {
-    char exe_absolute_path[PATH_MAX];
-    realpath("./" BUILD_FOLDER EXE_NAME, exe_absolute_path);
-    printf("|%s|\n", exe_absolute_path);
-    char link_absolute_path[PATH_MAX];
-    realpath("./" BUILD_FOLDER "echo", link_absolute_path);
-    printf("|%s|\n", link_absolute_path);
-
-    nob_cmd_append(&cmd,
-        "ln", "-fs", exe_absolute_path, link_absolute_path);
-    if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
-    }
-    //chdir("..");
-    nob_cmd_append(&cmd,
-        "pwd");
-    if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
 
     if (argc && 0 == strcmp("tests", nob_shift(argv, argc))) {
         nob_log(NOB_INFO, "tests...");

@@ -2,5 +2,6 @@
 
 **code features**
  - [x] cat
+ - [x] echo
  - [ ] wc
 
