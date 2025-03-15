@@ -7,4 +7,8 @@
     - [x] wc -l, lines
     - [ ] wc -w, words
     - [ ] wc -c, --bytes or -m --chars
+ - [ ] sort
+    - [ ] regular sort
+    - [ ] sort -n, numerical
+
 
