@@ -17,7 +17,6 @@ bool compare_last_component_of_filepath(char *filepath, char *component) {
 }
 
 void cmd_cat(int argc, char **argv) {
-    nob_log(NOB_INFO, __PRETTY_FUNCTION__);
     while (argc) {
         char *input_filepath = nob_shift(argv, argc);
         String_Builder input_sb = {0};
@@ -38,15 +37,31 @@ void cmd_echo(int argc, char **argv) {
     printf("\n");
 }
 
+void cmd_wc(int argc, char **argv) {
+    while (argc) {
+        char *input_filepath = nob_shift(argv, argc);
+        String_Builder input_sb = {0};
+        if (!nob_read_entire_file(input_filepath, &input_sb)) {
+            abort();
+        }
+        String_View input_sv = nob_sb_to_sv(input_sb);
+        int cnt = 0;
+        while (input_sv.count) {
+            nob_sv_chop_by_delim(&input_sv, '\n');
+            ++cnt;
+        }
+        printf("%d\t%s\n", cnt, input_filepath);
+    }
+}
+
+
 int main(int argc, char **argv) {
-    //nob_log(NOB_INFO, __PRETTY_FUNCTION__);
     char *program_name = nob_shift(argv, argc);
-    //nob_log(NOB_INFO, program_name);
     if (compare_last_component_of_filepath(program_name, "cat")) {
-        //nob_log(NOB_INFO, __PRETTY_FUNCTION__);
         cmd_cat(argc, argv);
     } else if (compare_last_component_of_filepath(program_name, "echo")) {
-        //nob_log(NOB_INFO, __PRETTY_FUNCTION__);
         cmd_echo(argc, argv);
+    } else if (compare_last_component_of_filepath(program_name, "wc")) {
+        cmd_wc(argc, argv);
     }
 }

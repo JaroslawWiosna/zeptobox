@@ -8,6 +8,7 @@
 char *subcommands[] = {
     "cat",
     "echo",
+    "wc",
 };
 
 int main(int argc, char **argv)
