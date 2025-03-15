@@ -22,14 +22,35 @@ int main(int argc, char **argv)
         SRC_FOLDER"main.c");
     if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
 
-    chdir(BUILD_FOLDER);
+    //chdir(BUILD_FOLDER);
     nob_cmd_append(&cmd,
         "pwd");
     if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
+    {
+    char exe_absolute_path[PATH_MAX];
+    realpath("./" BUILD_FOLDER EXE_NAME, exe_absolute_path);
+    printf("|%s|\n", exe_absolute_path);
+    char link_absolute_path[PATH_MAX];
+    realpath("./" BUILD_FOLDER "cat", link_absolute_path);
+    printf("|%s|\n", link_absolute_path);
+
     nob_cmd_append(&cmd,
-        "ln", "-fs", EXE_NAME, "cat");
+        "ln", "-fs", exe_absolute_path, link_absolute_path);
     if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
-    chdir("..");
+    }
+    {
+    char exe_absolute_path[PATH_MAX];
+    realpath("./" BUILD_FOLDER EXE_NAME, exe_absolute_path);
+    printf("|%s|\n", exe_absolute_path);
+    char link_absolute_path[PATH_MAX];
+    realpath("./" BUILD_FOLDER "echo", link_absolute_path);
+    printf("|%s|\n", link_absolute_path);
+
+    nob_cmd_append(&cmd,
+        "ln", "-fs", exe_absolute_path, link_absolute_path);
+    if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
+    }
+    //chdir("..");
     nob_cmd_append(&cmd,
         "pwd");
     if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;

@@ -3,8 +3,12 @@
 #include "../nob.h"
 
 String_View get_last_component_of_filepath(String_View sv) {
-    nob_sv_chop_by_delim(&sv, '/');
-    return sv;
+    String_View left = {0};
+    String_View right = sv;
+    while (right.count > 0) {
+        left = nob_sv_chop_by_delim(&right, '/');
+    }
+    return left;
 }
 
 bool compare_last_component_of_filepath(char *filepath, char *component) {
@@ -13,6 +17,7 @@ bool compare_last_component_of_filepath(char *filepath, char *component) {
 }
 
 void cmd_cat(int argc, char **argv) {
+    nob_log(NOB_INFO, __PRETTY_FUNCTION__);
     while (argc) {
         char *input_filepath = nob_shift(argv, argc);
         String_Builder input_sb = {0};
@@ -24,10 +29,24 @@ void cmd_cat(int argc, char **argv) {
     }
 }
 
+void cmd_echo(int argc, char **argv) {
+    while (argc > 0) {
+        String_View sv = sv_from_cstr(nob_shift(argv, argc));
+        printf(SV_Fmt, SV_Arg(sv));
+        printf(" ");
+    }
+    printf("\n");
+}
+
 int main(int argc, char **argv) {
+    //nob_log(NOB_INFO, __PRETTY_FUNCTION__);
     char *program_name = nob_shift(argv, argc);
+    //nob_log(NOB_INFO, program_name);
     if (compare_last_component_of_filepath(program_name, "cat")) {
-//    if (0 == strcmp(program_name, "./cat") || 0==strcmp(program_name, "cat")) {
+        //nob_log(NOB_INFO, __PRETTY_FUNCTION__);
         cmd_cat(argc, argv);
+    } else if (compare_last_component_of_filepath(program_name, "echo")) {
+        //nob_log(NOB_INFO, __PRETTY_FUNCTION__);
+        cmd_echo(argc, argv);
     }
 }
